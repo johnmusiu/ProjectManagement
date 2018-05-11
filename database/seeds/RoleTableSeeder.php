@@ -14,7 +14,7 @@ class RoleTableSeeder extends Seeder
     {
         //create junior employee role
         $role_junior = new Role();
-        $role_junior->name = 'junior_employee';
+        $role_junior->name = 'department_member';
         $role_junior->description = 'A Junior Member of the Department';
         $role_junior->save();
         
