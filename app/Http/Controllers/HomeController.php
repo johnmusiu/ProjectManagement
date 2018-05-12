@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
+use App\Task;
 
 class HomeController extends Controller
 {
@@ -24,6 +25,10 @@ class HomeController extends Controller
     public function index(Request $request)
     {
         $request->user()->authorizeRoles(['department_member', 'department_manager']);
-        return view('home');
+        $tasks = Task::where('status', '!=', 'closed')
+            ->with(['user', 'users', 'departments', 'progresses'])
+            ->get();
+
+        return view('home', compact('tasks'));
     }
 }
