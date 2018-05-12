@@ -18,3 +18,11 @@ Route::get('/', function () {
 Auth::routes();
 
 Route::get('/home', 'HomeController@index')->name('home');
+Route::get('/home/mytasks', 'HomeController@usertasks')->name('my_tasks');
+
+Route::get('/task/create', 'TasksController@index')->name('create_task');
+Route::post('/task/create', 'TasksController@create')->name('save_task');
+
+Route::get('/category/create', 'CategoriesController@index')->name('create_category');
+Route::post('/category/create', 'CategoriesController@create')->name('save_category');
+
