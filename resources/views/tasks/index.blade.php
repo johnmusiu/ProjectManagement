@@ -47,7 +47,10 @@
         <label for="category" class="col-md-4 control-label">Task Category</label>
         <select id="category" class="form-control" name="category">
           @foreach($categories as $category)
-            <option value="{{ $category['id'] }}">{{ $category['name'] }}</option>
+            @if(empty($category['department_id']) ||
+              $category['department_id'] == Auth::User()->department_id)
+              <option value="{{ $category['id'] }}">{{ $category['name'] }}</option>
+            @endif
           @endforeach
         
           @if ($errors->has('category'))
