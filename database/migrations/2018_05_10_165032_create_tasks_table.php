@@ -23,7 +23,6 @@ class CreateTasksTable extends Migration
             $table->enum('status', ['open', 'ongoing', 'closed']);
             $table->enum('priority', ['high', 'medium','low']);
             $table->enum('access', ['public', 'private']);
-            $table->string('doc_name');
             $table->timestamps();
         });
     }
