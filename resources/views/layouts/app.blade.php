@@ -2,7 +2,7 @@
 
 @include('layouts.navbar')
 
-<div class="container">
+<div class="container-fluid">
     @if (session('message'))
         <div class="alert alert-info">
             {{ session('message') }}
@@ -11,7 +11,9 @@
     
 
     <div class="row">
-        @yield('content')
+        <div class="col-md-10 col-md-offset-1">
+            @yield('content')
+        </div>
     </div>
 </div>
 
