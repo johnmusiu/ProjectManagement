@@ -26,9 +26,8 @@ class HomeController extends Controller
     {
         $request->user()->authorizeRoles(['department_member', 'department_manager']);
         $tasks = Task::where('status', '!=', 'closed')
-            ->with(['user', 'users', 'departments', 'progresses'])
+            ->with(['user', 'users', 'latest_progress'])
             ->get();
-
         return view('home', compact('tasks'));
     }
 }
