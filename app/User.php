@@ -38,6 +38,13 @@ class User extends Authenticatable
     }
 
     /**
+     * a user can be assigned to many tasks
+     */
+    public function task_assignment()
+    {
+        return $this->belongsToMany(Task::class, 'task_user');
+    }
+    /**
      * A user can only belong to one department
      */
     public function department()
