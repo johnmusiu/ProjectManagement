@@ -4,7 +4,7 @@
 <div class="panel panel-default">
   <div class="panel-heading">
     <h4> 
-      <a href="/category/create">Add a Category</a>
+      <a href="{{ route('create_task') }}">Add a Category</a>
     </h4>
   </div>
 </div>
@@ -119,18 +119,37 @@
         </select> 
       </div>
 
+      <div class="form-group form-inline {{ $errors->has('users') ? ' has-error' : '' }}">
+        <label for="priority" class="col-md-4 control-label">Assign Task</label>        
+        <select id="users" class="form-control" name="users[]" multiple>
+          @foreach($departments as $department)
+            <optgroup label="{{ $department['name'] }} Department">
+              @foreach($users as $user)
+              @if($user['department_id'] == $department['id'])
+                <option value="{{ $user['id'] }}">{{ $user['name'] }}</option>
+              @endif
+              @endforeach
+            </optgroup>
+          @endforeach
+          @if ($errors->has('users'))
+            <span class="help-block">
+              <strong>{{ $errors->first('users') }}</strong>
+            </span>
+          @endif
+        </select> 
+      </div>
+
       <div class="panel panel-default">
-        <div class="panel-header text-center"><h5>User and Department Assignments</h5></div>
+        <div class="panel-header text-center"><h5>User and Department Notifications</h5></div>
         <div class="panel-body">
-          <table class="table table-striped table-bordered">
+          <table class="table table-striped table-bordered table-responsive">
             <thead>
               <td>Departments</td>
-              <td>Users Assigned</td>
-              <td>User Group</td>
+              <td>Users</td>
             </thead>
-            <tbody>
-              <td>
-                <div class="form-group col-md-10 {{ $errors->has('department') ? ' has-error' : '' }}">
+            <tbody class="row">
+              <td class="col-md-6">
+                <div class="form-group col-md-12 {{ $errors->has('department') ? ' has-error' : '' }}">
                   <select id="department" data-style="form-control" class="form-control" name="department[]" multiple>
                     @foreach($departments as $department)
                       <option value="{{ $department['id'] }}">{{ $department['name'] }}</option>
@@ -145,35 +164,31 @@
                 </div>
               </td>
 
-              <td>
-                <div class="form-group col-md-10 {{ $errors->has('users') ? ' has-error' : '' }}">
-                    <select id="users" data-style="form-control" class="form-control" name="users[]" multiple>
-                      @foreach($departments as $department)
-                        <optgroup label="{{ $department['name'] }} Department">
-                          @foreach($users as $user)
+              <td  class="col-md-6">
+                <div class="form-group col-md-12 {{ $errors->has('notify_users') ? ' has-error' : '' }}">
+                  <select id="notify_users" data-style="form-control" class="form-control" name="notify_users[]" multiple>
+                    @foreach($departments as $department)
+                      <optgroup id="{{ $department['name'] }}" label="{{ $department['name'] }} Department">
+                        @foreach($users as $user)
                           @if($user['department_id'] == $department['id'])
                             <option value="{{ $user['id'] }}">{{ $user['name'] }}</option>
                           @endif
-                          @endforeach
-                        </optgroup>
-                      @endforeach
-                      @if ($errors->has('users'))
-                        <span class="help-block">
-                          <strong>{{ $errors->first('users') }}</strong>
-                        </span>
-                      @endif
-                    </select> 
-                  </div>
-
-              </td>
-
-              <td>
-                Coming Soon
+                        @endforeach
+                      </optgroup>
+                    @endforeach
+                    @if ($errors->has('notify_users'))
+                      <span class="help-block">
+                        <strong>{{ $errors->first('notify_users') }}</strong>
+                      </span>
+                    @endif
+                  </select> 
+                </div>
               </td>
             </tbody>
           </table>
         </div>
       </div>
+
       <div class="form-group{{ $errors->has('doc_name') ? ' has-error' : '' }}">
         <label for="doc_name" class="col-md-4 control-label">Upload Instructions</label>
 
