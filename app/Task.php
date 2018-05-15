@@ -38,6 +38,14 @@ class Task extends Model
     }
 
     /**
+     * get user assigned to a certain task
+     */
+    public function users_assigned()
+    {
+        return self::users();
+    }
+
+    /**
      * a task can be followed by many users
      * 
      */
