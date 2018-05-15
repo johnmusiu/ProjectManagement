@@ -16,11 +16,11 @@
     @foreach($tasks as $task)
     @if(\Auth::User()->hasRole('department_manager'))
         @if($task->user || $task->users->count() > 0)
-            @include('tasks._task')
+            @include('tasks._show')
         @endif
     @elseif(\Auth::User()->hasRole('department_member'))
         @if($task->user && $task->users->count() > 0)
-            @include('tasks._task')
+            @include('tasks._show')
         @endif
     @endif
     @endforeach

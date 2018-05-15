@@ -22,8 +22,8 @@
     
     <td>{{ $task->user->name }}</td>
     <td>
-        @if($task->users->count() > 0)
-            @foreach($task->users as $user)
+        @if($task->users_assigned->count() > 0)
+            @foreach($task->users_assigned as $user)
                 {{ $user->name }} <br>
             @endforeach
         @endif
