@@ -45,8 +45,8 @@
           Comment on task |  
         </a>
       @endif
+      <a href="{{ route('create_reminder', $task->id) }}"> Add Reminder |</a>
     </div>
-    
     
     <table class="table table-striped">
       <tbody>
@@ -55,6 +55,7 @@
           <td> {{ \Carbon\Carbon::parse($task->created_at)->format('d-m-Y') }}</td>
           <td class="text-right">Created by: </td>
           <td> {{ $task->user->name }}</td>
+        </tr>
         </tr>
         <tr>
           <td class="text-right">Description: </td>
@@ -175,24 +176,8 @@
             </form>
           </td>
         </tr> 
-        <!-- 
-        <tr>
-          <td></td>
-          <td></td>
-        </tr> -->
+        
         <!-- <tr>
-          <td></td>
-          <td></td>
-        </tr>
-        <tr>
-          <td></td>
-          <td></td>
-        </tr>
-        <tr>
-          <td></td>
-          <td></td>
-        </tr>
-        <tr>
           <td></td>
           <td></td>
         </tr> -->

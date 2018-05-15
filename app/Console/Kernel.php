@@ -13,7 +13,8 @@ class Kernel extends ConsoleKernel
      * @var array
      */
     protected $commands = [
-        //
+        //add class SendTaskReminders
+        '\App\Console\Commands\SendTaskReminders',
     ];
 
     /**
@@ -24,8 +25,9 @@ class Kernel extends ConsoleKernel
      */
     protected function schedule(Schedule $schedule)
     {
-        // $schedule->command('inspire')
-        //          ->hourly();
+        //name and signature of TaskReminder and executio time
+        $schedule->command('SendTaskReminders:sendreminders')
+                 ->everyMinute();
     }
 
     /**

@@ -35,3 +35,6 @@ Route::post('/task/comment/{task_id}', 'CommentController@comment')->name('save_
 Route::get('/category/create', 'CategoriesController@index')->name('create_category');
 Route::post('/category/create', 'CategoriesController@create')->name('save_category');
 
+Route::post('/task/reminder/{task_id}', 'RemindersController@save')->name('save_reminder');
+Route::get('/task/reminder/{task}', 'RemindersController@index')->name('create_reminder');
+
