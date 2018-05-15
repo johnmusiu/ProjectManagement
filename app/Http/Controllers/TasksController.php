@@ -214,4 +214,21 @@ class TasksController extends Controller
         return back()->withInput();
     }
 
+    /**
+     * method for getting user specific tasks 
+     */
+    public function user_tasks()
+    {
+        $tasks_created = Task::with(['user' => function ($query){
+                $query->where('id', \Auth::User()->id);
+            }, 'latest_progress', 'departments', 'users_assigned'])
+            ->latest()->get();
+
+        $tasks_assigned = Task::with(['users' => function ($query){
+                $query->where('task_user.user_id', \Auth::User()->id);
+            }, 'user', 'latest_progress', 'departments', 'users_assigned'])
+            ->latest()->get();
+        // dd($tasks_assigned);
+        return view('tasks.user_tasks', compact('tasks_created', 'tasks_assigned'));
+    }
 }
