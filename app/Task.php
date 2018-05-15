@@ -38,6 +38,14 @@ class Task extends Model
     }
 
     /**
+     * a task can be followed by many users
+     * 
+     */
+    public function followed_by()
+    {
+        return $this->belongsToMany(User::class, 'notifications ');
+    }
+    /**
      *  a task can have many progress entries
      */
     public function progresses()
@@ -60,5 +68,20 @@ class Task extends Model
     public function departments()
     {
         return $this->belongsToMany(Department::class, 'notifications');
+    }
+
+    /**
+     * a task can have many comments
+     */
+    public function comments()
+    {
+        return $this->hasMany(Comment::class);
+    }
+    /**
+     * get latest comment for a task
+     */
+    public function latest_comment()
+    {
+        return $this->hasOne(Comment::class)->latest();
     }
 }
