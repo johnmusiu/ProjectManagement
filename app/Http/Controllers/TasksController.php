@@ -10,6 +10,7 @@ use App\User;
 use App\Category;
 use App\Department;
 use App\Notification;
+use App\Progress;
 
 class TasksController extends Controller
 {
@@ -45,7 +46,6 @@ class TasksController extends Controller
      */
     public function create(Request $request)
     {
-        // dd($request->all());
         $validator = Validator::make($request->all(), [
             'name' => 'required|min:2|max:255',
             'description' => 'required',
@@ -55,7 +55,7 @@ class TasksController extends Controller
             'status' => 'required',
             'priority' => 'required',
             'department' => 'required',
-            'users' => 'required'
+            'users' => 'required',
         ]);
 
         if ($validator->fails()) {
@@ -77,11 +77,13 @@ class TasksController extends Controller
         $task->save();
 
         // users to be notified
-        foreach($request['notify_users'] as $user_id){
-            $notification = new Notification();
-            $notification->task_id = $task->id;
-            $notification->user_id = $user_id;
-            $notification->save();
+        if($request['notify_users']){
+            foreach($request['notify_users'] as $user_id){
+                $notification = new Notification();
+                $notification->task_id = $task->id;
+                $notification->user_id = $user_id;
+                $notification->save();
+            }
         }
 
         // departments to be notified
@@ -144,19 +146,28 @@ class TasksController extends Controller
      */
     public function follow(Task $task)
     {
+        if(Notification::where([
+            ['user_id', \Auth::User()->id],
+            ['task_id', $task->id]
+        ])->count() > 0){
+            session()->flash("error", "You already follow this task!");
+            return back();
+        }
         //add follow => user to get notifications on task
         $notification = new Notification();
         $notification->task_id = $task->id;
-        $notification->user_id = $user_id;
+        $notification->user_id = \Auth::User()->id;
         $notification->save();
 
         if($notification) session()->flash("message", "Task followed successfully");
         else session()->flash("error", "Task follow failed");
-        return redirect(back());
+        return redirect(route('view_task', $task->id));
     }
 
     /**
      * mark task from open to ongoing
+     * @param Task $task
+     * @return back
      */
     public function mark_ongoing(Task $task)
     {
@@ -166,4 +177,41 @@ class TasksController extends Controller
 
         return back();
     }
+
+    /**
+     * update task progress
+     * @param Task $task
+     * @return back
+     */
+    public function save_progress(Task $task, Request $request)
+    {
+        $validator = Validator::make($request->all(), [
+            'message' => 'required|min:2|max:255',
+            'progress' => 'required|min:0|max:100',
+        ]);
+
+        if ($validator->fails()) {
+            return redirect('/task/'.$task->id)
+                        ->withErrors($validator)
+                        ->withInput();
+        }
+
+        $progress = new Progress();
+        $progress->task()->associate($task);
+        $progress->user()->associate(\Auth::User());
+        $progress->message = $request['message'];
+        $progress->progress = $request['progress'];
+        
+        //if progress 100% mark task as complete
+        if($request['progress'] == 100)
+        {
+            $task->status = 'closed';
+            $task->save();
+        }
+        if($progress->save()) session()->flash("message", "Progress saved successfully.");
+        else session()->flash("error", "Progress not saved.");
+
+        return back()->withInput();
+    }
+
 }
