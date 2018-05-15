@@ -4,7 +4,7 @@
 <div class="panel panel-default">
   <div class="panel-heading">
     <h4> 
-      <a href="{{ route('create_task') }}">Add a Category</a>
+      <a href="{{ route('create_category') }}">Add a Category</a>
     </h4>
   </div>
 </div>
@@ -202,7 +202,7 @@
           @endif
         </div>
       </div>
-      
+
 
       <div class="form-group">
         <div class="col-md-8 col-md-offset-4">
