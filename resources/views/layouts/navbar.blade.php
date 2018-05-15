@@ -20,7 +20,7 @@
             <!-- Left Side Of Navbar -->
             <ul class="nav navbar-nav">
                 <li><a href="{{ route('home') }}">Tasks</a></li>
-                <li><a href="{{ route('my_tasks') }}">My Tasks</a></li>
+                <li><a href="{{ route('user_tasks') }}">My Tasks</a></li>
             </ul>
 
             <!-- Right Side Of Navbar -->
@@ -29,6 +29,7 @@
                 @if (Auth::guest())
                     <li><a href="{{ route('login') }}">Login</a></li>
                 @else
+                    <li><a href="{{ route('create_category') }}">Create Category</a></li>
                     <li><a href="{{ route('create_task') }}">Create Task</a></li>
                     <li class="dropdown">
                         <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-expanded="false">
