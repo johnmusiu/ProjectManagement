@@ -45,13 +45,12 @@ class CategoriesController extends Controller
                 "Category already exists with that name for this department");
             return back()->withInput();
         }
-        if($category->save()){
-            session()->flash("message", "Category created successfully.");
-            return redirect(route('create_task'));
-        }else{
+        
+        if(!$category->save()){
             session()->flash("message", "Category not created successfully.");
             return back()->withInput();
         }
-
+        session()->flash("message", "Category created successfully.");
+        return redirect(route('create_category'));
     }
 }
