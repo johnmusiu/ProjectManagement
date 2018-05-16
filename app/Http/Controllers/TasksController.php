@@ -11,6 +11,13 @@ use App\Category;
 use App\Department;
 use App\Notification;
 use App\Progress;
+use App\Notifications\TaskCreated;  
+use App\Notifications\TaskCompleted;  
+use App\Notifications\TaskCreatedUser;  
+use App\Notifications\AssignedTaskCreated;  
+use App\Notifications\AssignedTaskCompleted;  
+use App\Notifications\TaskMarkedOngoing;
+use App\Notifications\TaskProgressUpdated;
 
 class TasksController extends Controller
 {
@@ -55,7 +62,7 @@ class TasksController extends Controller
             'status' => 'required',
             'priority' => 'required',
             'department' => 'required',
-            'users' => 'required',
+            'assigned_to' => 'required',
         ]);
 
         if ($validator->fails()) {
@@ -73,16 +80,25 @@ class TasksController extends Controller
         $task->category_id = $request['category'];
         $task->status = $request['status'];
         $task->priority = $request['priority'];
+        $task->assigned_to = $request['assigned_to'];
         $task->user()->associate(\Auth::User()->id);
         $task->save();
 
-        // users to be notified
-        if($request['notify_users']){
-            foreach($request['notify_users'] as $user_id){
-                $notification = new Notification();
-                $notification->task_id = $task->id;
-                $notification->user_id = $user_id;
-                $notification->save();
+        \Auth::User()->notify(new TaskCreatedUser($task));
+        User::find($request['assigned_to'])->notify(new AssignedTaskCreated($task));
+
+        // users to be notified / for private tasks this is not done
+        if($request['access'] != 'private')
+        {
+            if($request['notify_users']){
+                foreach($request['notify_users'] as $user_id){
+                    $notification = new Notification();
+                    $notification->task_id = $task->id;
+                    $notification->user_id = $user_id;
+                    $notification->save();
+                    //alert task created
+                    User::find($user_id)->notify(new TaskCreated($task));
+                }
             }
         }
 
@@ -92,11 +108,26 @@ class TasksController extends Controller
             $notification->task_id = $task->id;
             $notification->department_id = $department_id;
             $notification->save();
-        }
-
-        // users assigned to perform a certain task
-        foreach($request['users'] as $user_id){
-            $task->users()->syncWithoutDetaching($user_id);
+            //check if member not notified, send alert
+            $department = Department::find($department_id);
+            if($request['access'] == 'private'){
+                foreach($department->users as $user){
+                    // $user = $department->users->first();
+                    if($user->hasRole('department_manager')){
+                        // dd($user);
+                        $user->notify(new TaskCreated($task));
+                    }
+                }
+            }else{
+                foreach($department->users as $user){
+                    if($request['notify_users']){
+                        if(!in_array($user->id, $request['notify_users']))
+                            $user->notify(new TaskCreated($task));
+                    }else{
+                        $user->notify(new TaskCreated($task));
+                    }
+                }
+            }
         }
 
         $request = $request->all();
@@ -172,9 +203,32 @@ class TasksController extends Controller
     public function mark_ongoing(Task $task)
     {
         $task->status = 'ongoing';
-        if($task->save()) session()->flash("message", "Task marked as ongoing.");
-        else session()->flash("error", "Failed: Task not marked as ongoing");
-
+        if(!$task->save()) {
+            session()->flash("error", "Failed: Task not marked as ongoing");
+            return back();
+        }
+        session()->flash("message", "Task marked as ongoing.");
+        //send email notifications
+        //if private alert dept manager
+        foreach($task->departments as $department){
+            $dept = Department::find($department->id);
+            if($task->access == 'private')
+            {
+                foreach($dept->users as $user){
+                    if($user->hasRole('department_manager')){
+                        $user->notify(new TaskMarkedOngoing($task));
+                    }
+                }
+            }else{
+                foreach($dept->users as $user){
+                    $user->notify(new TaskMarkedOngoing($task));
+                }
+            }
+        }
+        foreach($task->followed_by as $follower){
+            if(!in_array($follower->department_id, $task->departments->pluck('id')->all()))
+                $follower->notify(new TaskMarkedOngoing($task));
+        }
         return back();
     }
 
@@ -207,9 +261,33 @@ class TasksController extends Controller
         {
             $task->status = 'closed';
             $task->save();
+            \Auth::User()->notify(new AssignedTaskCompleted($task));
         }
-        if($progress->save()) session()->flash("message", "Progress saved successfully.");
-        else session()->flash("error", "Progress not saved.");
+        if($progress->save()){
+            session()->flash("message", "Progress saved successfully.");
+            foreach($task->departments as $department){
+                $dept = Department::find($department->id);
+                if($task->access == 'private')
+                {
+                    foreach($dept->users as $user){
+                        if($user->hasRole('department_manager')){
+                            if($request['progress'] == 100)
+                                $user->notify(new TaskCompleted($task));
+                            else 
+                                $user->notify(new TaskProgressUpdated($task));
+                        }
+                    }
+                }else{
+                    foreach($dept->users as $user){
+                        $user->notify(new TaskProgressUpdated($task));
+                    }
+                }
+            }
+            foreach($task->followed_by as $follower){
+                if(!in_array($follower->department_id, $task->departments->pluck('id')->all()))
+                    $follower->notify(new TaskMarkedOngoing($task));
+            }
+        }else session()->flash("error", "Progress not saved.");
 
         return back()->withInput();
     }
@@ -221,14 +299,14 @@ class TasksController extends Controller
     {
         $tasks_created = Task::with(['user' => function ($query){
                 $query->where('id', \Auth::User()->id);
-            }, 'latest_progress', 'departments', 'users_assigned'])
+            }, 'latest_progress'])
             ->latest()->get();
 
-        $tasks_assigned = Task::with(['users' => function ($query){
-                $query->where('task_user.user_id', \Auth::User()->id);
-            }, 'user', 'latest_progress', 'departments', 'users_assigned'])
+        $tasks_assigned = Task::with(['assigned_to'=> function ($query){
+                $query->where('id', \Auth::User()->id);
+            }, 'user', 'latest_progress'])
             ->latest()->get();
-        // dd($tasks_assigned);
+
         return view('tasks.user_tasks', compact('tasks_created', 'tasks_assigned'));
     }
 }
