@@ -32,17 +32,9 @@ class Task extends Model
     /**
      * a task can be assigned to many users
      */
-    public function users()
+    public function assigned_to()
     {
-        return $this->belongsToMany(User::class, 'task_user');
-    }
-
-    /**
-     * get user assigned to a certain task
-     */
-    public function users_assigned()
-    {
-        return self::users();
+        return $this->belongsTo(User::class, 'assigned_to');
     }
 
     /**
@@ -51,7 +43,7 @@ class Task extends Model
      */
     public function followed_by()
     {
-        return $this->belongsToMany(User::class, 'notifications ');
+        return $this->belongsToMany(User::class, 'notifications');
     }
     /**
      *  a task can have many progress entries
