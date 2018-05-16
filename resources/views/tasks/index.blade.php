@@ -32,7 +32,8 @@
         <label for="description" class="col-md-4 control-label">Task Description</label>
 
         <div class="col-md-6">
-          <textarea id="description" class="form-control" rows="10" name="description" value="{{ old('description') }}" required>
+          <textarea id="description" class="form-control" rows="3" name="description" required>
+            {{ old('description') }}
           </textarea>
           
           @if ($errors->has('description'))
@@ -46,6 +47,7 @@
       <div class="form-group form-inline {{ $errors->has('category') ? ' has-error' : '' }}">
         <label for="category" class="col-md-4 control-label">Task Category</label>
         <select id="category" class="form-control" name="category">
+          <option disabled selected>Select Category</option>
           @foreach($categories as $category)
             @if(empty($category['department_id']) ||
               $category['department_id'] == Auth::User()->department_id)
@@ -64,7 +66,7 @@
       <div class="form-group{{ $errors->has('due_date') ? ' has-error' : '' }}">
         <label for="due_date" class="col-md-4 control-label">Date Due</label>
 
-        <div class="col-md-6">
+        <div class="col-md-2">
           <input id="due_date" type="date" class="form-control" name="due_date" 
             min="{{ date('Y-m-d') }}" value="{{ old('due_date') }}" required>
           
@@ -78,7 +80,8 @@
 
       <div class="form-group form-inline {{ $errors->has('access') ? ' has-error' : '' }}">
         <label for="access" class="col-md-4 control-label">Access</label>
-        <select id="access" class="form-control" name="access">          
+        <select id="access" class="form-control" name="access">
+          <option disabled selected>Select Access</option>          
           <option value="private">Private</option>
           <option value="public">Public</option>
 
@@ -92,7 +95,8 @@
 
       <div class="form-group form-inline {{ $errors->has('status') ? ' has-error' : '' }}">
         <label for="status" class="col-md-4 control-label">Status</label>
-        <select id="status" class="form-control" name="status">          
+        <select id="status" class="form-control" name="status">  
+          <option disabled selected>Select Status</option>        
           <option value="open">Open</option>
           <option value="ongoing">Ongoing</option>
           
@@ -106,7 +110,8 @@
 
       <div class="form-group form-inline {{ $errors->has('priority') ? ' has-error' : '' }}">
         <label for="priority" class="col-md-4 control-label">Priority</label>
-        <select id="priority" class="form-control" name="priority">          
+        <select id="priority" class="form-control" name="priority">
+          <option disabled selected>Select Priority</option>          
           <option value="low">Low</option>
           <option value="medium">Medium</option>
           <option value="high">High</option>
@@ -119,9 +124,10 @@
         </select> 
       </div>
 
-      <div class="form-group form-inline {{ $errors->has('users') ? ' has-error' : '' }}">
+      <div class="form-group form-inline {{ $errors->has('assigned_to') ? ' has-error' : '' }}">
         <label for="priority" class="col-md-4 control-label">Assign Task</label>        
-        <select id="users" class="form-control" name="users[]" multiple>
+        <select id="assigned_to" class="form-control" name="assigned_to" required>
+          <option disabled selected>Select User</option>
           @foreach($departments as $department)
             <optgroup label="{{ $department['name'] }} Department">
               @foreach($users as $user)
@@ -131,9 +137,9 @@
               @endforeach
             </optgroup>
           @endforeach
-          @if ($errors->has('users'))
+          @if ($errors->has('assigned_to'))
             <span class="help-block">
-              <strong>{{ $errors->first('users') }}</strong>
+              <strong>{{ $errors->first('assigned_to') }}</strong>
             </span>
           @endif
         </select> 
