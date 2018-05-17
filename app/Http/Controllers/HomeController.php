@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
 use App\Task;
+use App\User;
 
 class HomeController extends Controller
 {
@@ -69,8 +70,8 @@ class HomeController extends Controller
             session()->flash("error", "Access denied");
             return back();
         }
-        $tasks = $tasks_public->merge($tasks_private);
-
-        return view('home', compact('tasks', 'private_tasks', 'public_tasks'));
+        $tasks = $tasks_public->merge($tasks_private)->sortByDesc('id');
+        $users = User::get();
+        return view('home', compact('tasks', 'users'));
     }
 }
