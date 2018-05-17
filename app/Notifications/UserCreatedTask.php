@@ -6,6 +6,7 @@ use Illuminate\Bus\Queueable;
 use Illuminate\Notifications\Notification;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Notifications\Messages\MailMessage;
+use App\Task;
 
 class UserCreatedTask extends Notification
 {
@@ -43,7 +44,7 @@ class UserCreatedTask extends Notification
     public function toMail($notifiable)
     {
         return (new MailMessage)
-                    ->subject($this->user->name .' created a task')
+                    ->subject($this->task->user->name .' created a task')
                     ->line('A user you follow created a task.')
                     ->line('Task ID '. $this->task->id .': '. $this->task->name)
                     ->line('Description: '. $this->task->description)
