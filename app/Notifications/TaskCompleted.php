@@ -44,7 +44,7 @@ class TaskCompleted extends Notification
         return (new MailMessage)
             ->subject('Task'. $this->task->access .' completed')
             ->line('Task ID '. $this->task->id .': '. $this->task->name .' has been marked as complete')
-            ->line('Marked by'. $this->task->assigned_to->name)
+            ->line('Marked by user id'. $this->task->assigned_to)
             ->action('View Task', url(route('view_task', $this->task->id)))
             ->line('Thank you!');
     }
