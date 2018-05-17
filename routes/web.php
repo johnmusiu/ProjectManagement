@@ -41,6 +41,8 @@ Route::get('/task/reminder/{task}', 'RemindersController@index')->name('create_r
 Route::post('/user/follow/{user}', 'UsersController@follow')->name('follow_user');
 Route::post('/user/unfollow/{user}', 'UsersController@unfollow')->name('unfollow_user');
 
+Route::get('/download/{file}', 'TasksController@download')->name('download_file');
+
 Route::post('/user/reports/daily', 'ReportsController@daily_user_report')->name('daily_user_report');
 Route::post('/user/reports/weekly', 'ReportsController@weekly_user_report')->name('weekly_user_report');
 Route::post('/department/reports/weekly', 'ReportsController@weekly_dept_report')->name('weekly_dept_report');

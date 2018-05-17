@@ -76,7 +76,13 @@
         </tr>
         <tr>
           <td class="text-right">Documents: </td>          
-          <td colspan="3">Documents Attachec for task</td>
+          <td colspan="3">
+            @foreach($task_files as $file)
+            <a href="{{ route('download_file', $file->file_url) }}">
+              {{ $file->file_url }}
+            </a>
+            @endforeach
+          </td>
         </tr>
         <tr>
           <td class="text-center" colspan="4">

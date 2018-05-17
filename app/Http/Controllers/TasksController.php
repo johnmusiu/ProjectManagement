@@ -182,7 +182,9 @@ class TasksController extends Controller
     public function view_details(Task $task)
     {   
         $user = User::find($task->assigned_to);
-        return view('tasks.view_details', compact('task', 'user'));
+        //get files associated
+        $task_files = DB::table('task_files')->where('task_id', $task->id)->get();
+        return view('tasks.view_details', compact('task', 'user', 'task_files'));
     }
 
     /**
@@ -330,5 +332,17 @@ class TasksController extends Controller
             ->latest()->get();
         $users = User::get();
         return view('tasks.user_tasks', compact('tasks_created', 'tasks_assigned', 'users'));
+    }
+
+    /** 
+     * method to download task file
+     * @param $file_name
+     * @return file
+     */
+    public function download($file)
+    {
+        $path = public_path().'/task_files/'.$file;
+        
+        return response()->download($path, $file);
     }
 }
