@@ -55,5 +55,10 @@ class UserTableSeeder extends Seeder
         $dept_manager2->save();
         $dept_manager2->roles()->attach($role_manager);
 
+        //create followers 
+        $dept_manager1->following()->attach($dept_member1);
+        $dept_manager2->following()->attach($dept_member2);
+        $dept_member1->following()->attach($dept_member2);
+
     }
 }
