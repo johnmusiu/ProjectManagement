@@ -93,10 +93,30 @@ class User extends Authenticatable
 
     /**
      * check a single role
-     * @param string $role
+     * @param boolean
      */
     public function hasRole($role)
     {
         return null !== $this->roles()->where('name', $role)->first();
+    }
+
+    /**
+     * follower relationship
+     * @return BelongsToMany
+     */
+    public function followers()
+    {
+        return $this->belongsToMany(User::class, 'followers', 'followed_id',
+            'follower_id');
+    }
+    
+    /**
+     * follower relationship
+     * @return BelongsToMany
+     */
+    public function following()
+    {
+        return $this->belongsToMany(User::class, 'followers','follower_id', 
+            'followed_id');
     }
 }

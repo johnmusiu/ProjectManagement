@@ -20,12 +20,56 @@
         <td>No comment yet</td>
     @endif
     
-    <td>{{ $task->user->name }}</td>
     <td>
-        @if($task->users_assigned->count() > 0)
-            @foreach($task->users_assigned as $user)
-                {{ $user->name }} <br>
-            @endforeach
+        {{ $task->user->name }}
+        @if($task->user->id != Auth::User()->id)
+            @if(in_array($task->user->id, Auth::User()->following->pluck('id')->all()))
+                <a href="{{ route('unfollow_user', $task->user->id) }}" 
+                    onclick="event.preventDefault();document.getElementById('unfollow-user{{ $task->user->id }}').submit();"
+                    >
+                    Unfollow
+                </a>
+                <form id="unfollow-user{{ $task->user->id }}" action="{{ route('unfollow_user', $task->user->id) }}" 
+                    method="post" style="display: none;">
+                    {{ csrf_field() }}
+                </form>
+            @else
+                <a href="{{ route('follow_user', $task->user->id) }}"
+                    onclick="event.preventDefault();document.getElementById('follow-user{{ $task->user->id }}').submit();"
+                    >
+                    Follow
+                </a>
+                <form id="follow-user{{ $task->user->id }}" action="{{ route('follow_user', $task->user->id) }}" 
+                    method="post" style="display: none;">
+                    {{ csrf_field() }}
+                </form>
+            @endif
+        @endif
+    </td>
+    <td>
+        {{ $users[($task->assigned_to)-1]->name }}
+        @if($task->assigned_to != Auth::User()->id)
+            @if(in_array($task->assigned_to, Auth::User()->following->pluck('id')->all()))
+                <a href="{{ route('unfollow_user', $task->assigned_to) }}" 
+                    onclick="event.preventDefault();document.getElementById('unfollow-user{{ $task->assigned_to }}').submit();"
+                    >
+                    Unfollow
+                </a>
+                <form id="unfollow-user{{ $task->assigned_to }}" action="{{ route('unfollow_user', $task->assigned_to) }}" 
+                    method="post" style="display: none;">
+                    {{ csrf_field() }}
+                </form>
+            @else
+                <a href="{{ route('follow_user', $task->assigned_to) }}"
+                    onclick="event.preventDefault();document.getElementById('follow-user{{ $task->assigned_to }}').submit();"
+                    >
+                    Follow
+                </a>
+                <form id="follow-user{{ $task->assigned_to }}" action="{{ route('follow_user', $task->assigned_to) }}" 
+                    method="post" style="display: none;">
+                    {{ csrf_field() }}
+                </form>
+            @endif 
         @endif
     </td>
     <td><a class="btn btn-secondary" href="/task/{{ $task->id }}">View</a></td>

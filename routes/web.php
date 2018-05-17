@@ -38,3 +38,5 @@ Route::post('/category/create', 'CategoriesController@create')->name('save_categ
 Route::post('/task/reminder/{task_id}', 'RemindersController@save')->name('save_reminder');
 Route::get('/task/reminder/{task}', 'RemindersController@index')->name('create_reminder');
 
+Route::post('/user/follow/{user}', 'UsersController@follow')->name('follow_user');
+Route::post('/user/unfollow/{user}', 'UsersController@unfollow')->name('unfollow_user');
