@@ -45,11 +45,11 @@ Currently the system is hosted at: <http://task_management.cf>
 
 2. Clone the repository
 
-        git clone link
+        git clone https://johnmusiu@bitbucket.org/johnmusiu/project-management-coding-challenge.git
 
 3. cd into the project folder
 
-        cd Project_Management
+        cd project-management-coding-challenge/
 
 4. Run
 
@@ -57,11 +57,11 @@ Currently the system is hosted at: <http://task_management.cf>
 
 5. Setup .env file
 
-        cp .envexample .env
+        cp .env.example .env
 
 6. Generate app key
 
-        php artisan key:generate
+        php artisan key:gen
 
 7. Setup database in your app.
 
