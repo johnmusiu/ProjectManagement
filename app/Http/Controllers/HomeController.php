@@ -28,7 +28,7 @@ class HomeController extends Controller
         $request->user()->authorizeRoles(['department_member', 'department_manager']);
 
         $tasks_public = Task::where('access', 'public')
-            ->with(['user', 'latest_progress', 'latest_comment', 'assigned_to'])
+            ->with(['user', 'latest_progress', 'latest_comment', 'user_assigned'])
             ->latest()->get();
 
         if(\Auth::User()->hasRole('department_manager')){
@@ -38,29 +38,29 @@ class HomeController extends Controller
                     $query->where('users.department_id', 
                         \Auth::User()->department_id);
                 },
-                'assigned_to', 'latest_progress', 'latest_comment'])
+                'user_assigned', 'latest_progress', 'latest_comment'])
                 ->latest()->get();
             //get all private tasks assigned to department members
             $tasks_private_as = Task::where('access', 'private')
-                ->with(['user', 'assigned_to'=> function($query){
+                ->with(['user', 'user_assigned'=> function($query){
                     $query->where('id', \Auth::User()->id);
                 }
                 , 'latest_progress', 'latest_comment'])
                 ->latest()->get();
-                
+
             $tasks_private = $tasks_private->merge($tasks_private_as);
 
         }else if(\Auth::User()->hasRole('department_member')){
             //private tasks a user is assigned
             $tasks_private = Task::where('access', 'private')
                 ->with(['user', 'latest_progress', 'latest_comment', 
-                'assigned_to'=> function($query){
+                'user_assigned'=> function($query){
                         $query->where('id', \Auth::User()->id);
                     } 
                 ])->latest()->get();
             //private tasks a user created
             $tasks_private_p = Task::where('user_id', \Auth::User()->id)
-                ->with(['user', 'assigned_to', 'latest_progress', 
+                ->with(['user', 'user_assigned', 'latest_progress', 
                     'latest_comment'])
                 ->latest()->get();
 

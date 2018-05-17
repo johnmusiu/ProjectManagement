@@ -8,7 +8,7 @@
   <div class="panel-body">
     <div class="text-center">
       <!-- checks who can update progress for a task -->
-      @if($task->users->contains(Auth::User()->id))
+      @if($task->assigned_to == Auth::User()->id)
         |@if($task->status == 'open')
           <a href="{{ route('mark_ongoing', $task->id) }}" 
             onclick="event.preventDefault();document.getElementById('mark-ongoing').submit();">
@@ -20,13 +20,15 @@
         @elseif($task->status == 'ongoing')
           <a href="" onclick="event.preventDefault();document.getElementById('progress-form').style.display = 'block';"> Add progress </a>
         @elseif($task->status == 'closed')
-          reopen or reassign
+          <a href=""> Reopen or Reassign Task </a>
         @endif
         |&nbsp You follow this task
-
-      <!-- follow task -->
       @else
-        |@if(Auth::User()->id != $task->user_id && $task->departments->contains(Auth::User()->department_id))
+      <!-- if user didnt create task and is not in departments being notified for task -->
+      <!-- and doesnt follow task -->
+        |@if(Auth::User()->id != $task->user_id && 
+            !in_array(Auth::User()->department_id, $task->departments->pluck('id')->all()) &&
+            !in_array(Auth::User()->id, $task->followed_by->pluck('id')->all()))
           <a href="{{ route('follow_task', $task->id) }}" 
             onclick="event.preventDefault();document.getElementById('follow-task').submit();">
             Follow task
@@ -35,16 +37,17 @@
               {{ csrf_field() }}
           </form>
         @else
-          |&nbsp You follow this task
+           You follow this task
         @endif
-      @endif|
+      @endif
+      <!-- a department manager can comment on task if it is created by a member of thei department -->
       @if(\Auth::User()->hasRole("department_manager") && 
           \Auth::User()->department_id == $task->user->department_id)
         <a href="" 
           onclick="event.preventDefault();document.getElementById('comment-form').style.display = 'block';">
-          Comment on task |  
+          | Comment on task   
         </a>
-      @endif
+      @endif |
       <a href="{{ route('create_reminder', $task->id) }}"> Add Reminder |</a>
     </div>
     
@@ -67,13 +70,13 @@
         </tr>
         <tr>
           <td class="text-right">Assigned to: </td>
-          <td> 
-            @foreach($task->users as $user)
-              {{ $user->name }} <br>
-            @endforeach
-          </td>
+          <td>{{ $user->name }} </td>
           <td class="text-right">Task status: </td>
           <td> {{ $task->status }}</td>
+        </tr>
+        <tr>
+          <td class="text-right">Documents: </td>          
+          <td colspan="3">Documents Attachec for task</td>
         </tr>
         <tr>
           <td class="text-center" colspan="4">
@@ -176,11 +179,6 @@
             </form>
           </td>
         </tr> 
-        
-        <!-- <tr>
-          <td></td>
-          <td></td>
-        </tr> -->
 
       </tbody>
     </table>

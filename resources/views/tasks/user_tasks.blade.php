@@ -53,10 +53,10 @@
                 <td>Created by</td>
                 <td>Assigned to</td>
                 <td>View</td>
-            </thead>
+            </thead> 
             <tbody>
                 @foreach($tasks_assigned as $task)
-                    @if($task->users->count() > 0)
+                    @if($task->user_assigned)
                         @include('tasks._user_tasks')
                     @endif
                 @endforeach

@@ -32,7 +32,7 @@ class Task extends Model
     /**
      * a task can be assigned to many users
      */
-    public function assigned_to()
+    public function user_assigned()
     {
         return $this->belongsTo(User::class, 'assigned_to');
     }

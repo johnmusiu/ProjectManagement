@@ -14,15 +14,20 @@
 </thead>
 <tbody>
     @foreach($tasks as $task)
-    @if(\Auth::User()->hasRole('department_manager'))
-        @if($task->user || $task->users->count() > 0)
+        @if($task->access == 'private')
+            @if(Auth::User()->hasRole('department_manager'))
+                @if(Auth::User()->id == $task->assigned_to || Auth::User()->id == $task->user->id ||
+                    Auth::User()->department_id == $task->user->department_id)
+                    @include('tasks._show')
+                @endif
+            @else
+                @if(Auth::User()->id == $task->assigned_to || Auth::User()->id == $task->user->id)
+                    @include('tasks._show')
+                @endif
+            @endif
+        @else
             @include('tasks._show')
         @endif
-    @elseif(\Auth::User()->hasRole('department_member'))
-        @if($task->user && $task->users->count() > 0)
-            @include('tasks._show')
-        @endif
-    @endif
     @endforeach
 </tbody>
 </table>

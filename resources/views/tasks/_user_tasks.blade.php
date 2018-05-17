@@ -22,11 +22,7 @@
     
     <td>{{ $task->user->name }}</td>
     <td>
-        @if($task->users_assigned->count() > 0)
-            @foreach($task->users_assigned as $user)
-                {{ $user->name }} <br>
-            @endforeach
-        @endif
+        {{ $task->user_assigned->name }} <br>
     </td>
     <td><a class="btn btn-secondary" href="/task/{{ $task->id }}">View</a></td>
 </tr>

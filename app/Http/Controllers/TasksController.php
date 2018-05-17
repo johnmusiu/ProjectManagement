@@ -319,17 +319,16 @@ class TasksController extends Controller
      * method for getting user specific tasks 
      */
     public function user_tasks()
-    {
+    { 
         $tasks_created = Task::with(['user' => function ($query){
                 $query->where('id', \Auth::User()->id);
-            }, 'latest_progress'])
+            }, 'latest_progress', 'user_assigned'])
             ->latest()->get();
-
-        $tasks_assigned = Task::with(['assigned_to'=> function ($query){
+        $tasks_assigned = Task::with(['user_assigned'=> function ($query){
                 $query->where('id', \Auth::User()->id);
             }, 'user', 'latest_progress'])
             ->latest()->get();
-
-        return view('tasks.user_tasks', compact('tasks_created', 'tasks_assigned'));
+        $users = User::get();
+        return view('tasks.user_tasks', compact('tasks_created', 'tasks_assigned', 'users'));
     }
 }
