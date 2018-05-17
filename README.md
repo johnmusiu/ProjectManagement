@@ -8,7 +8,7 @@ This a system that can be used to create, assign, work on and follow up on tasks
 
 ## Hosted version
 
-Currently the system is hosted at: <http://task_management.cf>
+Currently the system is hosted at: <http://project-management.cf>
 
 ### Available users to sign in to the system
 
