@@ -11,6 +11,7 @@ use App\Task;
 class TaskMarkedOngoing extends Notification
 {
     use Queueable;
+
     public $task;
     /**
      * Create a new notification instance.
@@ -43,7 +44,7 @@ class TaskMarkedOngoing extends Notification
     {
         return (new MailMessage)
                     ->subject('Task: '. $this->task->name .' marked as ongoing')
-                    ->line($this->task->access .'task has been marked ongoing.')                    
+                    ->line('A '. $this->task->access .' task has been marked ongoing.')                    
                     ->line("Task '".$this->task->name."'")
                     ->line('Task ID '. $this->task->id .': '. $this->task->name)
                     ->action('View Task', url(route('view_task', $this->task->id)))

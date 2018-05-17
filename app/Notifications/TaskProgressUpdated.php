@@ -6,6 +6,7 @@ use Illuminate\Bus\Queueable;
 use Illuminate\Notifications\Notification;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Notifications\Messages\MailMessage;
+use App\Task;
 
 class TaskProgressUpdated extends Notification
 {
@@ -42,7 +43,7 @@ class TaskProgressUpdated extends Notification
     {
         return (new MailMessage)
                     ->subject('Task: '. $this->task->name .' progress update')
-                    ->line($this->task->access .'task progress is '. $this->task->latest_progress->progress ."%")                    
+                    ->line('This '. $this->task->access .' task progress is '. $this->task->latest_progress->progress ."%")                    
                     ->line("Task '".$this->task->name."'")
                     ->line('Task ID '. $this->task->id .': '. $this->task->name)
                     ->action('View Task', url(route('view_task', $this->task->id)))
