@@ -18,6 +18,9 @@ use App\Notifications\AssignedTaskCreated;
 use App\Notifications\AssignedTaskCompleted;  
 use App\Notifications\TaskMarkedOngoing;
 use App\Notifications\TaskProgressUpdated;
+use App\Notifications\UserCompletedTask;
+use App\Notifications\UserCreatedTask;
+use App\Notifications\UserAssignedTask;
 
 class TasksController extends Controller
 {
@@ -71,7 +74,7 @@ class TasksController extends Controller
                         ->withInput();
         }
 
-        // // create new task object
+        // create new task object
         $task = new Task();
         $task->name = $request['name'];
         $task->description = $request['description'];
@@ -90,6 +93,17 @@ class TasksController extends Controller
         // users to be notified / for private tasks this is not done
         if($request['access'] != 'private')
         {
+            //notify those following assigned user on task progress
+            $assigned_user = User::find($request['assigned_to']);
+            foreach($assigned_user->followers as $follower){
+                $follower->notify(new UserAssignedTask($task, $assigned_user));
+            }
+
+            //alert followers user created task
+            foreach(\Auth::User()->followers as $follower){
+                $follower->notify(new UserCreatedTask($task));
+            }
+
             if($request['notify_users']){
                 foreach($request['notify_users'] as $user_id){
                     $notification = new Notification();
@@ -263,6 +277,14 @@ class TasksController extends Controller
             $task->status = 'closed';
             $task->save();
             \Auth::User()->notify(new AssignedTaskCompleted($task));
+
+            if($task->access != 'private'){
+                //notify those following assigned user on task completion
+                $assigned_user = User::find($task->assigned_to);
+                foreach($assigned_user->followers as $follower){
+                    $follower->notify(new UserCompletedTask($task, $assigned_user));
+                }
+            }
         }
         if($progress->save()){
             session()->flash("message", "Progress saved successfully.");
