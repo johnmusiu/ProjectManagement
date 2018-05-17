@@ -167,7 +167,8 @@ class TasksController extends Controller
      */
     public function view_details(Task $task)
     {   
-        return view('tasks.view_details', compact('task'));
+        $user = User::find($task->assigned_to);
+        return view('tasks.view_details', compact('task', 'user'));
     }
 
     /**
