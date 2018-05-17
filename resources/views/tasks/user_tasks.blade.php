@@ -8,6 +8,32 @@
     </div>
     
     <div class="panel-body">
+        <div>
+            My Reports: 
+            <a href="{{ route('daily_user_report') }}" 
+                onclick="event.preventDefault();document.getElementById('daily-user-report').submit();">
+                Daily Report
+            </a>
+            <form id="daily-user-report" action="{{ route('daily_user_report') }}" 
+                method="post" style="display: none;">
+                {{ csrf_field() }}
+            </form>
+            <a href="{{ route('weekly_user_report') }}"
+                onclick="event.preventDefault();document.getElementById('weekly-user-report').submit();">
+                Weekly Report
+            </a>
+            <form id="weekly-user-report" action="{{ route('weekly_user_report') }}" 
+                method="post" style="display: none;">
+                {{ csrf_field() }}
+            </form>
+        </div>
+        <hr>
+        @if(Auth::User()->hasRole('department_manager'))
+            <div>
+                Department Reports:
+            </div> 
+            <hr>
+        @endif
         
         <!-- table to hold tasks a user has created -->
         @if($tasks_created->count() > 0)
