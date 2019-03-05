@@ -15,9 +15,13 @@ class HomeController extends Controller
      */
     public function __construct()
     {
-        $this->middleware('auth');
+        $this->middleware('auth')->except('welcome');
     }
 
+    public function welcome()
+    {
+        return view('welcome');
+    }
     /**
      * Show the application dashboard.
      *
@@ -35,7 +39,7 @@ class HomeController extends Controller
             //get all private tasks created by department members
             $tasks_private = Task::where('access', 'private')
                 ->with(['user' => function($query){
-                    $query->where('users.department_id', 
+                    $query->where('users.department_id',
                         \Auth::User()->department_id);
                 },
                 'user_assigned', 'latest_progress', 'latest_comment'])
@@ -53,14 +57,14 @@ class HomeController extends Controller
         }else if(\Auth::User()->hasRole('department_member')){
             //private tasks a user is assigned
             $tasks_private = Task::where('access', 'private')
-                ->with(['user', 'latest_progress', 'latest_comment', 
+                ->with(['user', 'latest_progress', 'latest_comment',
                 'user_assigned'=> function($query){
                         $query->where('id', \Auth::User()->id);
-                    } 
+                    }
                 ])->latest()->get();
             //private tasks a user created
             $tasks_private_p = Task::where('user_id', \Auth::User()->id)
-                ->with(['user', 'user_assigned', 'latest_progress', 
+                ->with(['user', 'user_assigned', 'latest_progress',
                     'latest_comment'])
                 ->latest()->get();
 
