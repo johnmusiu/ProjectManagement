@@ -12,10 +12,10 @@ class Kernel extends ConsoleKernel
      *
      * @var array
      */
-    protected $commands = [
-        //add class SendTaskReminders
-        '\App\Console\Commands\SendTaskReminders',
-    ];
+    // protected $commands = [
+    //     //add class SendTaskReminders
+    //     '\App\Console\Commands\SendTaskReminders',
+    // ];
 
     /**
      * Define the application's command schedule.
@@ -38,5 +38,6 @@ class Kernel extends ConsoleKernel
     protected function commands()
     {
         require base_path('routes/console.php');
+        $this->load(__DIR__.'/Commands');
     }
 }
